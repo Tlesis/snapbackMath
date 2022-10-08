@@ -25,6 +25,10 @@ void setReferenceAngle(double referenceAngleRadians) {
     }
 
     D.steerMotorPos = adjustedReferenceAngleRadians / motorEncoderPositionCoefficient;
+
+    #ifdef DEBUG_PRINT
+    D.print(Input::final, "setReferenceAngle");
+    #endif
 }
 
 void set(double driveVoltage, double steerAngle) {
@@ -58,5 +62,10 @@ void set(double driveVoltage, double steerAngle) {
 
     D.driveMotorSpeed = driveVoltage / 12;
     setReferenceAngle(steerAngle);
+
+    #ifdef DEBUG_PRINT
+    D.print(Input::intermediate, "setReferenceAngle");
+    std::cout << "driveMotorSpeed: " << D.driveMotorSpeed << '\n';
+    #endif
 }
 }

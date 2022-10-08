@@ -12,7 +12,7 @@ double copySign(double magnitude, double sign) {
     }
 }
 
-void desaturateWheelSpeeds(States *moduleStates, 
+void desaturateWheelSpeeds(States moduleStates[],
                            double attainableMaxSpeedMetersPerSecond) {
     double realMaxSpeed = 0;
     for (int i = 0; i < 4; i++) {
