@@ -2,6 +2,7 @@
 
 #include <array>
 
+namespace Matrix {
 const float A[8][3] =
     {{1, 0, -0.25},
      {0, 1,  0.3246},
@@ -24,4 +25,5 @@ std::array<float, 8> mult(float B[3]) {
      (A[7][0] * B[0]) + (A[7][1] * B[1]) + (A[7][2] * B[2])};
 
     return C;
+}
 }

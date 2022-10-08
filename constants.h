@@ -23,3 +23,7 @@ struct Data {
           steerMotorPos;
 
 } D;
+
+struct States {
+    float speed, angle;
+} S;

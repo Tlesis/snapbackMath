@@ -3,8 +3,8 @@
 #include <cmath>
 
 #include "constants.h"
-
-#define getSteerAngle() 0
+namespace SDS {
+#define getSteerAngle() 100
 #define motorEncoderPositionCoefficient 2.396844981e-4
 #define motorEncoderVelocityCoefficient (2.396844981e-4 * 10)
 
@@ -58,4 +58,5 @@ void set(double driveVoltage, double steerAngle) {
 
     D.driveMotorSpeed = driveVoltage / 12;
     setReferenceAngle(steerAngle);
+}
 }

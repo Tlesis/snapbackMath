@@ -2,6 +2,7 @@
 
 #include "constants.h"
 
+namespace DriveSubsystem {
 /** math fns */
 double copySign(double magnitude, double sign) {
     if ((magnitude < 0) && (sign < 0)) {
@@ -9,7 +10,20 @@ double copySign(double magnitude, double sign) {
     } else {
         return -magnitude;
     }
+}
 
+void desaturateWheelSpeeds(States *moduleStates, 
+                           double attainableMaxSpeedMetersPerSecond) {
+    double realMaxSpeed = 0;
+    for (int i = 0; i < 4; i++) {
+        realMaxSpeed = (moduleStates[i].speed > realMaxSpeed) ? moduleStates[i].speed : realMaxSpeed;
+    }
+    if (realMaxSpeed > attainableMaxSpeedMetersPerSecond) {
+        for (int i = 0; i < 4; i++) {
+            moduleStates[i].speed =
+                moduleStates[i].speed / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
+        }
+    }
 }
 
 /** wpi fns */
@@ -28,11 +42,12 @@ T deadband(T value, float deadband) {
 
 template <typename Y>
 Y modifyAxis(Y value) {
-        // Deadband
-        value = deadband(value, DEADBAND);
+    // Deadband
+    value = deadband(value, DEADBAND);
 
-        // Square the axis
-        value = copySign(value * value, value);
+    // Square the axis
+    value = copySign(value * value, value);
 
-        return (Y)value;
-    }
+    return (Y)value;
+}
+}

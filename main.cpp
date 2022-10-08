@@ -10,10 +10,6 @@
 
 #define LOOP_AMOUNT 1
 
-struct States {
-    float speed, angle;
-} S;
-
 int main() {
     for (int loop = 0; loop < LOOP_AMOUNT; loop++) {
         D = {0};
@@ -23,10 +19,10 @@ int main() {
         std::cin >> D.thetaInput;
 
         /** swerveDrive command */
-        fromFieldRelativeSpeeds(
-            -modifyAxis(D.yInput) * MAX_VELOCITY_METERS_PER_SECOND,
-            -modifyAxis(D.xInput) * MAX_VELOCITY_METERS_PER_SECOND,
-            -modifyAxis(D.thetaInput / 1.25) * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        SwerveDrive::fromFieldRelativeSpeeds(
+            -DriveSubsystem::modifyAxis(D.yInput) * MAX_VELOCITY_METERS_PER_SECOND,
+            -DriveSubsystem::modifyAxis(D.xInput) * MAX_VELOCITY_METERS_PER_SECOND,
+            -DriveSubsystem::modifyAxis(D.thetaInput / 1.25) * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             0
         );
 
@@ -34,7 +30,7 @@ int main() {
         std::array<float, 8> vector;
         States states[4];
         float B[3] = {D.xFinal, D.yFinal, D.thetaFinal};
-        vector = mult(B);
+        vector = Matrix::mult(B);
 
         for (int i = 0; i < 4; i++) {
             float x = vector[i * 2];
@@ -55,17 +51,19 @@ int main() {
             states[i] = {speed, angle};
         } /** end `toSwerveModuleStates()` */
 
+        DriveSubsystem::desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+
         // Front Left
-        set(states[0].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle * (180/PI));
+        SDS::set(states[0].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle * (180/PI));
 
         /** return collected data */
         std::cout <<
-        "----------  " << loop << "  ----------\n" <<
-        "\nxInput:\t\t" << D.xInput << '\n' <<
-        "yInput:\t\t" << D.yInput << '\n' <<
-        "thetaInput:\t" << D.thetaInput << "\n\n" <<
-        "driveMotor:\t" << D.driveMotorSpeed << '\n' <<
-        "steerMotor:\t" << D.steerMotorPos << '\n' <<
+        "----------  " << loop << "  ----------\n"     <<
+        "\nxInput:\t\t" << D.xInput          << '\n'   <<
+        "yInput:\t\t"   << D.yInput          << '\n'   <<
+        "thetaInput:\t" << D.thetaInput      << "\n\n" <<
+        "driveMotor:\t" << D.driveMotorSpeed << '\n'   <<
+        "steerMotor:\t" << D.steerMotorPos   << '\n'   <<
         "-------------------------\n\n";
     }
 }
