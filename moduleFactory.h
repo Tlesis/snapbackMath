@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "../constants.h"
+#include "constants.h"
 
 #define getSteerAngle() 0
 #define motorEncoderPositionCoefficient 2.396844981e-4
