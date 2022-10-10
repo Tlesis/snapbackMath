@@ -3,7 +3,7 @@ CFLAGS=-Wall -g -std=c++20 -pedantic -Wextra -Wshadow
 NAME=snapback
 FILES=main.o
 
-all: main
+all: clean main run
 
 # Compiles object files into one binary
 main: $(FILES)
@@ -16,8 +16,8 @@ main: $(FILES)
 # Removes Compiled files
 clean:
 	@echo Cleaning. . .
-	rm $(NAME).out *.o
+	rm -f $(NAME).out *.o
 
 # Compiles the project & runs the binary
-run: main
+run: clean main
 	./$(NAME).out
