@@ -77,10 +77,9 @@ int main() {
         }
         #endif
 
-        // Front Left
-        SDS::set(states[0].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle * (180/PI));
-
-        /** return collected data */
-        D.print(Input::finalPrint, "", loop);
+        SDS::set(states[0].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle * (180/PI), 0);
+        SDS::set(states[1].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle * (180/PI), 1);
+        SDS::set(states[2].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle * (180/PI), 2);
+        SDS::set(states[3].speed / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle * (180/PI), 3);
     }
 }

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define DEBUG_PRINT
+#define NDEBUG_PRINT
 
 #define PI 3.14159265358979323846
 #define TWO_PI (2 * PI)
@@ -13,6 +13,12 @@
 
 #define MAX_VELOCITY_METERS_PER_SECOND 4.968230455
 #define MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND 61.2152594258
+
+#define TICKS_PER_ROTATION 2048
+#define STEER_REDUCTION ((15.0 / 32.0) * (10.0 / 60.0))
+
+constexpr auto sensorPositionCoefficient = TWO_PI / TICKS_PER_ROTATION * STEER_REDUCTION;
+constexpr auto sensorVelocityCoefficient = sensorPositionCoefficient * 10;
 
 enum class Input {
     input,
@@ -38,24 +44,26 @@ struct Data {
           void print(Input value, char* fn, int loopCount = 0) {
             switch (value) {
                 case Input::input:
-                    std::cout << fn << '\n' <<
+                    std::cerr << fn << '\n' <<
                         "xInput:\t\t"   << xInput     << '\n'   <<
                         "yInput:\t\t"   << yInput     << '\n'   <<
                         "thetaInput:\t" << thetaInput << "\n\n";
                     break;
                 case Input::intermediate:
-                    std::cout << fn << '\n' <<
+                    std::cerr << fn << '\n' <<
                         "xIntermediate:\t\t"   << xIntermediate     << '\n' <<
                         "yIntermediate:\t\t"   << yIntermediate     << '\n' <<
                         "thetaIntermediate:\t" << thetaIntermediate << "\n\n";
                     break;
                 case Input::final:
-                    std::cout << fn << '\n' <<
-                        "driveMotor:\t" << driveMotorSpeed << '\n' <<
-                        "steerMotor:\t" << steerMotorPos   << "\n\n";
+                    std::cerr << 
+                        "----------  " << fn << "  ----------\n"   <<
+                        "driveMotor:\t" << driveMotorSpeed << "\t\t\t" << (driveMotorSpeed * 100) << "\% Speed\n" <<
+                        "steerMotor:\t" << steerMotorPos   << " Ticks\t\t" << toDeg() << " DEG\n" <<
+                        "-------------------------\n\n";
                     break;
                 case Input::finalPrint:
-                    std::cout <<
+                    std::cerr <<
                         "----------  " << loopCount << "  ----------\n"<<
                         "xInput:\t\t"   << xInput          << '\n'   <<
                         "yInput:\t\t"   << yInput          << '\n'   <<
@@ -66,6 +74,18 @@ struct Data {
                     break;
             }
           }
+ private:
+    float toDeg() {
+        float motorDeg = steerMotorPos * 0.087890625;
+
+        if (motorDeg <= -360) {
+            motorDeg += 360;
+        } else if (motorDeg >= 360) {
+            motorDeg -= 360;
+        }
+
+        return motorDeg;
+    }
 
 } D;
 

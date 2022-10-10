@@ -3,13 +3,13 @@
 #include <cmath>
 
 #include "constants.h"
-namespace SDS {
-#define getSteerAngle() 100
-#define motorEncoderPositionCoefficient 2.396844981e-4
-#define motorEncoderVelocityCoefficient (2.396844981e-4 * 10)
 
-void setReferenceAngle(double referenceAngleRadians) {
-    double currentAngleRadians = getSteerAngle() * motorEncoderPositionCoefficient;
+#define getSteerAngle() 0
+
+namespace SDS {
+
+void setReferenceAngle(double referenceAngleRadians, int index) {
+    double currentAngleRadians = getSteerAngle() * sensorPositionCoefficient;
 
     double currentAngleRadiansMod = std::fmod(currentAngleRadians, TWO_PI);
     if (currentAngleRadiansMod < 0.0) {
@@ -24,25 +24,37 @@ void setReferenceAngle(double referenceAngleRadians) {
         adjustedReferenceAngleRadians +=  TWO_PI;
     }
 
-    D.steerMotorPos = adjustedReferenceAngleRadians / motorEncoderPositionCoefficient;
+    D.steerMotorPos = adjustedReferenceAngleRadians / sensorPositionCoefficient;
 
-    #ifdef DEBUG_PRINT
-    D.print(Input::final, "setReferenceAngle");
-    #endif
+    switch (index) {
+        case 0:
+            D.print(Input::final, "FL");
+            break;
+        case 1:
+            D.print(Input::final, "FR");
+            break;
+        case 2:
+            D.print(Input::final, "BL");
+            break;
+        case 3:
+            D.print(Input::final, "BR");
+            break;
+    }
+
 }
 
-void set(double driveVoltage, double steerAngle) {
+void set(double driveVoltage, double steerAngle, int index) {
     steerAngle = std::fmod(steerAngle, TWO_PI);
     if (steerAngle < 0.0) {
-        steerAngle += 2.0 * PI;
+        steerAngle += TWO_PI;
     }
 
     double difference = steerAngle - getSteerAngle();
     // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
     if (difference >= PI) {
-        steerAngle -= 2.0 * PI;
+        steerAngle -= TWO_PI;
     } else if (difference < -PI) {
-        steerAngle += 2.0 * PI;
+        steerAngle += TWO_PI;
     }
     difference = steerAngle - getSteerAngle(); // Recalculate difference
 
@@ -61,11 +73,6 @@ void set(double driveVoltage, double steerAngle) {
     }
 
     D.driveMotorSpeed = driveVoltage / 12;
-    setReferenceAngle(steerAngle);
-
-    #ifdef DEBUG_PRINT
-    D.print(Input::intermediate, "setReferenceAngle");
-    std::cout << "driveMotorSpeed: " << D.driveMotorSpeed << '\n';
-    #endif
+    setReferenceAngle(steerAngle, index);
 }
 }
