@@ -13,7 +13,7 @@
 int main() {
     for (int loop = 0; loop < LOOP_AMOUNT; loop++) {
         D = {0, 0, 0, 0, 0, 0, 0, 0};
-        std::cout << "input x, y, and theta joystick inputs\n$ ";
+        std::cout << "input x, y, and theta joystick inputs [-1, 1]\n$ ";
         std::cin >> D.xInput;
         std::cin >> D.yInput;
         std::cin >> D.thetaInput;
@@ -27,8 +27,7 @@ int main() {
             -DriveSubsystem::modifyAxis(D.yInput) * MAX_VELOCITY_METERS_PER_SECOND,
             -DriveSubsystem::modifyAxis(D.xInput) * MAX_VELOCITY_METERS_PER_SECOND,
             -DriveSubsystem::modifyAxis(D.thetaInput / 1.25) * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            -(10 * (PI/180))
-        );
+            0);
 
         #ifdef DEBUG_PRINT
         D.print(Input::intermediate, "fromFieldRelativeSpeeds");
