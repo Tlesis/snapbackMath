@@ -43,7 +43,7 @@ T deadband(T value, float deadband) {
 template <typename Y>
 Y modifyAxis(Y value) {
     // Deadband
-    //value = deadband(value, DEADBAND);
+    value = deadband(value, DEADBAND);
 
     // Square the axis
     value = copySign(value * value, value);

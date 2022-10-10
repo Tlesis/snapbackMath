@@ -170,11 +170,7 @@ void setReferenceAngle(double referenceAngleRadians, double speed, int index) {
         adjustedReferenceAngleRadians +=  TWO_PI;
     }
 
-    if (adjustedReferenceAngleRadians / sensorPositionCoefficient != 0 && speed != 0) {
-        D.steerMotorPos = oldAngle = adjustedReferenceAngleRadians / sensorPositionCoefficient;
-    } else {
-        D.steerMotorPos = oldAngle;
-    }
+    D.steerMotorPos = (speed != 0) ? oldAngle = adjustedReferenceAngleRadians / sensorPositionCoefficient : oldAngle;
 
     switch (index) {
         case 0:
