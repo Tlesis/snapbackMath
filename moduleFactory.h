@@ -6,9 +6,11 @@
 
 #define getSteerAngle() 0
 
+double oldAngle;
+
 namespace SDS {
 
-void setReferenceAngle(double referenceAngleRadians, int index) {
+void setReferenceAngle(double referenceAngleRadians, double speed, int index) {
     double currentAngleRadians = getSteerAngle() * sensorPositionCoefficient;
 
     double currentAngleRadiansMod = std::fmod(currentAngleRadians, TWO_PI);
@@ -24,7 +26,11 @@ void setReferenceAngle(double referenceAngleRadians, int index) {
         adjustedReferenceAngleRadians +=  TWO_PI;
     }
 
-    D.steerMotorPos = adjustedReferenceAngleRadians / sensorPositionCoefficient;
+    if (adjustedReferenceAngleRadians / sensorPositionCoefficient != 0 && speed != 0) {
+        D.steerMotorPos = oldAngle = adjustedReferenceAngleRadians / sensorPositionCoefficient;
+    } else {
+        D.steerMotorPos = oldAngle;
+    }
 
     switch (index) {
         case 0:
@@ -73,6 +79,6 @@ void set(double driveVoltage, double steerAngle, int index) {
     }
 
     D.driveMotorSpeed = driveVoltage / 12;
-    setReferenceAngle(steerAngle, index);
+    setReferenceAngle(steerAngle, abs(D.driveMotorSpeed), index);
 }
 }

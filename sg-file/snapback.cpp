@@ -27,9 +27,7 @@ constexpr auto sensorVelocityCoefficient = sensorPositionCoefficient * 10;
 enum class Input {
     input,
     intermediate,
-    final,
-
-    finalPrint
+    final
 };
 
 struct Data {
@@ -45,7 +43,7 @@ struct Data {
           driveMotorSpeed,
           steerMotorPos;
 
-          void print(Input value, const char* fn, int loopCount = 0) {
+          void print(Input value, const char* fn) {
             switch (value) {
                 case Input::input:
                     std::cerr << fn << '\n' <<
@@ -62,18 +60,8 @@ struct Data {
                 case Input::final:
                     std::cerr << 
                         "----------  " << fn << "  ----------\n"   <<
-                        "driveMotor:\t" << driveMotorSpeed << "\t\t\t" << (driveMotorSpeed * 100) << "%% Speed\n" <<
+                        "driveMotor:\t" << driveMotorSpeed << "\t\t\t" << (driveMotorSpeed * 100) << "\% Speed\n" <<
                         "steerMotor:\t" << steerMotorPos   << " Ticks\t\t" << toDeg() << " DEG\n" <<
-                        "-------------------------\n\n";
-                    break;
-                case Input::finalPrint:
-                    std::cerr <<
-                        "----------  " << loopCount << "  ----------\n"<<
-                        "xInput:\t\t"   << xInput          << '\n'   <<
-                        "yInput:\t\t"   << yInput          << '\n'   <<
-                        "thetaInput:\t" << thetaInput      << "\n\n" <<
-                        "driveMotor:\t" << driveMotorSpeed << '\n'   <<
-                        "steerMotor:\t" << steerMotorPos   << '\n'   <<
                         "-------------------------\n\n";
                     break;
             }
@@ -164,7 +152,9 @@ void fromFieldRelativeSpeeds(
 /** moduleFactory */
 namespace SDS {
 
-void setReferenceAngle(double referenceAngleRadians, int index) {
+double oldAngle;
+
+void setReferenceAngle(double referenceAngleRadians, double speed, int index) {
     double currentAngleRadians = getSteerAngle() * sensorPositionCoefficient;
 
     double currentAngleRadiansMod = std::fmod(currentAngleRadians, TWO_PI);
@@ -180,7 +170,11 @@ void setReferenceAngle(double referenceAngleRadians, int index) {
         adjustedReferenceAngleRadians +=  TWO_PI;
     }
 
-    D.steerMotorPos = adjustedReferenceAngleRadians / sensorPositionCoefficient;
+    if (adjustedReferenceAngleRadians / sensorPositionCoefficient != 0 && speed != 0) {
+        D.steerMotorPos = oldAngle = adjustedReferenceAngleRadians / sensorPositionCoefficient;
+    } else {
+        D.steerMotorPos = oldAngle;
+    }
 
     switch (index) {
         case 0:
@@ -229,7 +223,7 @@ void set(double driveVoltage, double steerAngle, int index) {
     }
 
     D.driveMotorSpeed = driveVoltage / 12;
-    setReferenceAngle(steerAngle, index);
+    setReferenceAngle(steerAngle, abs(D.driveMotorSpeed), index);
 }
 }
 
