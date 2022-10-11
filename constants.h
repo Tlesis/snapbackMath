@@ -56,7 +56,7 @@ struct Data {
                 case Input::final:
                     std::cerr << 
                         "----------  " << fn << "  ----------\n"   <<
-                        "driveMotor:\t" << driveMotorSpeed << "\t\t\t" << (driveMotorSpeed * 100) << "\% Speed\n" <<
+                        "driveMotor:\t" << driveMotorSpeed << "\t\t\t" << (driveMotorSpeed * 100) << "% Speed\n" <<
                         "steerMotor:\t" << steerMotorPos   << " Ticks\t\t" << toDeg() << " DEG\n" <<
                         "-------------------------\n\n";
                     break;
