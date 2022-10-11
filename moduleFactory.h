@@ -6,27 +6,26 @@
 
 #define getSteerAngle() 0
 
-double oldAngle;
-
 namespace SDS {
 
 void setReferenceAngle(double referenceAngleRadians, double speed, int index) {
+
     double currentAngleRadians = getSteerAngle() * sensorPositionCoefficient;
 
-    double currentAngleRadiansMod = std::fmod(currentAngleRadians, TWO_PI);
+    double currentAngleRadiansMod = std::fmod(currentAngleRadians, (2.0 * PI));
     if (currentAngleRadiansMod < 0.0) {
-        currentAngleRadiansMod += TWO_PI;
+        currentAngleRadiansMod += (2.0 * PI);
     }
 
     // The reference angle has the range [0, 2pi) but the Falcon's encoder can go above that
     double adjustedReferenceAngleRadians = referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
     if (referenceAngleRadians - currentAngleRadiansMod > PI) {
-        adjustedReferenceAngleRadians -= TWO_PI;
+        adjustedReferenceAngleRadians -= (2.0 * PI);
     } else if (referenceAngleRadians - currentAngleRadiansMod < -PI) {
-        adjustedReferenceAngleRadians +=  TWO_PI;
+        adjustedReferenceAngleRadians +=  (2.0 * PI);
     }
 
-    D.steerMotorPos = (speed != 0) ? oldAngle = adjustedReferenceAngleRadians / sensorPositionCoefficient : oldAngle;
+    D.steerMotorPos = adjustedReferenceAngleRadians / sensorPositionCoefficient;
 
     switch (index) {
         case 0:
@@ -42,21 +41,20 @@ void setReferenceAngle(double referenceAngleRadians, double speed, int index) {
             D.print(Input::final, "BR");
             break;
     }
-
 }
 
 void set(double driveVoltage, double steerAngle, int index) {
-    steerAngle = std::fmod(steerAngle, TWO_PI);
+    steerAngle = std::fmod(steerAngle, (2.0 * PI));
     if (steerAngle < 0.0) {
-        steerAngle += TWO_PI;
+        steerAngle += (2.0 * PI);
     }
 
     double difference = steerAngle - getSteerAngle();
     // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
     if (difference >= PI) {
-        steerAngle -= TWO_PI;
+        steerAngle -= (2.0 * PI);
     } else if (difference < -PI) {
-        steerAngle += TWO_PI;
+        steerAngle += (2.0 * PI);
     }
     difference = steerAngle - getSteerAngle(); // Recalculate difference
 
@@ -69,9 +67,9 @@ void set(double driveVoltage, double steerAngle, int index) {
     }
 
     // Put the target angle back into the range [0, 2pi)
-    steerAngle = std::fmod(steerAngle, TWO_PI);
+    steerAngle = std::fmod(steerAngle, (2.0 * PI));
     if (steerAngle < 0.0) {
-        steerAngle += TWO_PI;
+        steerAngle += (2.0 * PI);
     }
 
     D.driveMotorSpeed = driveVoltage / 12;

@@ -5,7 +5,6 @@
 #define NDEBUG_PRINT
 
 #define PI 3.14159265358979323846
-#define TWO_PI (2 * PI)
 
 #define DEADBAND 0.4
 
@@ -17,7 +16,7 @@
 #define TICKS_PER_ROTATION 2048
 #define STEER_REDUCTION ((15.0 / 32.0) * (10.0 / 60.0))
 
-constexpr auto sensorPositionCoefficient = TWO_PI / TICKS_PER_ROTATION * STEER_REDUCTION;
+constexpr auto sensorPositionCoefficient = (2.0 * PI) / TICKS_PER_ROTATION * STEER_REDUCTION;
 constexpr auto sensorVelocityCoefficient = sensorPositionCoefficient * 10;
 
 enum class Input {
